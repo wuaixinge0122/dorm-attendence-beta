@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.json">
+<title>宿舍考勤统计 V20260928_1</title>
+<style>
+:root{
+  --bg:#f5f7fb;--surface:#ffffff;--surface-2:#f8fafc;--surface-3:#eef2f7;
+  --border:#e5e7eb;--border-strong:#dbe1ea;
+  --text:#111827;--text-2:#64748b;--text-3:#94a3b8;
+  --header-bg:linear-gradient(135deg,#111827 0%,#1e293b 55%,#334155 100%);
+  --header-text:#ffffff;--header-sub:#cbd5e1;
+  --dock-bg:rgba(17,24,39,.82);--dock-text:#cbd5e1;--dock-hover:rgba(255,255,255,.08);
+  --accent:#111827;--accent-text:#ffffff;
+  --danger-bg:#fee2e2;--danger-text:#991b1b;
+  --shadow:0 2px 12px rgba(0,0,0,.04);
+  --glow-1:rgba(96,165,250,.45);--glow-2:rgba(167,139,250,.4);
+  --c-zaoqin:#16a34a;--c-bingjia:#e11d48;--c-shijia:#f59e0b;--c-qita:#6366f1;
+  --report-bg:#f3f5f8;--report-paper:#ffffff;--report-head:#f1f5f9;--report-row:#eef2f7;
+  --report-note-bg:#fff7ed;--report-note-text:#9a3412;
+  --report-text:#111827;--report-text-2:#64748b;--report-text-3:#94a3b8;
+  --modal-bg:rgba(0,0,0,.5);--modal-surface:#ffffff;
+}
+:root[data-theme="dark"]{
+  --bg:#0b1120;--surface:#111827;--surface-2:#1a2333;--surface-3:#1e293b;
+  --border:#1f2a3c;--border-strong:#2a3850;
+  --text:#e5e9f0;--text-2:#94a3b8;--text-3:#64748b;
+  --header-bg:linear-gradient(135deg,#020617 0%,#0f172a 55%,#1e293b 100%);
+  --header-text:#f1f5f9;--header-sub:#94a3b8;
+  --dock-bg:rgba(15,23,42,.88);--dock-text:#94a3b8;--dock-hover:rgba(255,255,255,.08);
+  --accent:#3b82f6;--accent-text:#ffffff;
+  --danger-bg:#3f1d1d;--danger-text:#fca5a5;
+  --shadow:0 2px 12px rgba(0,0,0,.35);
+  --glow-1:rgba(59,130,246,.35);--glow-2:rgba(139,92,246,.3);
+  --c-zaoqin:#22c55e;--c-bingjia:#f43f5e;--c-shijia:#fbbf24;--c-qita:#818cf8;
+  --report-bg:#0b1120;--report-paper:#111827;--report-head:#1e293b;--report-row:#1a2333;
+  --report-note-bg:#3b2412;--report-note-text:#fdba74;
+  --report-text:#e5e9f0;--report-text-2:#94a3b8;--report-text-3:#64748b;
+  --modal-bg:rgba(0,0,0,.7);--modal-surface:#111827;
+}
+@media (prefers-color-scheme: dark){
+  :root[data-theme="auto"]{
+    --bg:#0b1120;--surface:#111827;--surface-2:#1a2333;--surface-3:#1e293b;
+    --border:#1f2a3c;--border-strong:#2a3850;
+    --text:#e5e9f0;--text-2:#94a3b8;--text-3:#64748b;
+    --header-bg:linear-gradient(135deg,#020617 0%,#0f172a 55%,#1e293b 100%);
+    --header-text:#f1f5f9;--header-sub:#94a3b8;
+    --dock-bg:rgba(15,23,42,.88);--dock-text:#94a3b8;--dock-hover:rgba(255,255,255,.08);
+    --accent:#3b82f6;--accent-text:#ffffff;
+    --danger-bg:#3f1d1d;--danger-text:#fca5a5;
+    --shadow:0 2px 12px rgba(0,0,0,.35);
+    --glow-1:rgba(59,130,246,.35);--glow-2:rgba(139,92,246,.3);
+    --c-zaoqin:#22c55e;--c-bingjia:#f43f5e;--c-shijia:#fbbf24;--c-qita:#818cf8;
+    --report-bg:#0b1120;--report-paper:#111827;--report-head:#1e293b;--report-row:#1a2333;
+    --report-note-bg:#3b2412;--report-note-text:#fdba74;
+    --report-text:#e5e9f0;--report-text-2:#94a3b8;--report-text-3:#64748b;
+    --modal-bg:rgba(0,0,0,.7);--modal-surface:#111827;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+header{position:sticky;top:0;z-index:5;color:var(--header-text);padding:20px 16px 22px;background:var(--header-bg);overflow:hidden;transition:background .3s}
+header::before,header::after{content:"";position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 30% 30%,var(--glow-1),transparent 65%);animation:float 9s ease-in-out infinite}
+header::before{width:220px;height:220px;top:-90px;right:-60px}
+header::after{width:150px;height:150px;bottom:-70px;left:-40px;background:radial-gradient(circle at 60% 40%,var(--glow-2),transparent 65%);animation-delay:-4.5s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,-12px) scale(1.12)}}
+header h1{font-size:21px;margin:0 0 8px;position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+header h1 .ver{font-size:12px;font-weight:500;opacity:.75;background:rgba(255,255,255,.12);padding:2px 8px;border-radius:999px}
+header h1 .dot{width:9px;height:9px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.25);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(74,222,128,.25)}50%{box-shadow:0 0 0 8px rgba(74,222,128,.08)}}
+header .sub{font-size:13px;color:var(--header-sub);position:relative;z-index:1}
+.theme-toggle{position:absolute;top:18px;right:16px;z-index:2;display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.12);color:var(--header-text);border:1px solid rgba(255,255,255,.18);font-size:12px;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .2s}
+.theme-toggle:hover{background:rgba(255,255,255,.2)}
+.theme-toggle .ico{font-size:14px;line-height:1}
+main{max-width:900px;margin:auto;padding:14px 14px 130px}
+.card{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);transition:background .3s}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+input,select,textarea,button{font:inherit}
+input,select,textarea{border:1px solid var(--border-strong);border-radius:10px;padding:10px;background:var(--surface);color:var(--text);outline:none;transition:background .3s,border-color .3s,color .3s}
+input:focus,textarea:focus,select:focus{border-color:var(--text-2)}
+input::placeholder{color:var(--text-3)}
+button{border:0;border-radius:10px;padding:10px 13px;cursor:pointer;background:var(--accent);color:var(--accent-text);transition:background .2s,color .2s}
+button.secondary{background:var(--surface-3);color:var(--text)}
+button.danger{background:var(--danger-bg);color:var(--danger-text)}
+button.small{padding:7px 9px;font-size:13px}
+h2{font-size:17px;margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stat{background:var(--surface-2);border-radius:12px;padding:11px;text-align:center;transition:background .3s}
+.stat b{display:block;font-size:21px}
+.stat span{font-size:12px;color:var(--text-2)}
+.muted{color:var(--text-2);font-size:13px}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;background:var(--surface-3);color:var(--text)}
+.dorm{border:1px solid var(--border);border-radius:13px;padding:12px;margin-top:10px}
+.dorm-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-weight:700}
+.dorm-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.person{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--border)}
+.person:first-of-type{border-top:0}
+.person .p-name{font-weight:700;min-width:64px;flex-shrink:0}
+.person .p-sid{font-size:12px;color:var(--text-3);font-family:ui-monospace,Menlo,monospace}
+.person .p-status{display:flex;gap:5px;flex-wrap:wrap}
+.status-btn{border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);padding:6px 11px;border-radius:999px;font-size:13px;transition:all .15s ease}
+.status-btn:hover{border-color:var(--text-2)}
+.status-btn.on{color:#fff;border-color:transparent;font-weight:600}
+.status-btn.on[data-s="在寝"]{background:var(--c-zaoqin)}
+.status-btn.on[data-s="病假"]{background:var(--c-bingjia)}
+.status-btn.on[data-s="事假"]{background:var(--c-shijia)}
+.status-btn.on[data-s="其他"]{background:var(--c-qita)}
+.person .p-note{flex:1;min-width:120px}
+.person .p-export{padding:6px 9px;font-size:12px}
+.dock{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;display:flex;gap:4px;padding:7px;border-radius:20px;background:var(--dock-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 12px 32px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.06) inset;max-width:calc(100vw - 24px)}
+.dock button{background:transparent;color:var(--dock-text);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border-radius:14px;font-size:11px;transition:all .18s ease;white-space:nowrap}
+.dock button .ico{font-size:18px;line-height:1}
+.dock button:hover{background:var(--dock-hover);color:#fff}
+.dock button.active{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;box-shadow:0 6px 16px rgba(59,130,246,.4)}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;background:var(--surface-2);border-radius:12px;margin-top:8px;cursor:pointer;transition:background .2s}
+.history-item:hover{background:var(--surface-3)}
+.history-item .date{font-weight:700}
+.history-item .stats-line{font-size:12px;color:var(--text-2);margin-top:3px}
+.history-item .arrow{color:var(--text-3);font-size:20px}
+#toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-text);padding:10px 14px;border-radius:10px;display:none;z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:calc(100vw - 40px);text-align:center}
+.modal-mask{position:fixed;inset:0;background:var(--modal-bg);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-mask.show{display:flex}
+.modal{background:var(--modal-surface);border-radius:16px;max-width:640px;width:100%;max-height:86vh;overflow:auto;padding:18px;box-shadow:0 24px 64px rgba(0,0,0,.35)}
+.modal h3{margin:0 0 12px;font-size:17px}
+.modal .conflict{margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:10px}
+.modal .conflict .c-title{font-weight:700;margin-bottom:8px;color:var(--c-bingjia)}
+.modal .conflict .c-row{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--border);font-size:13px}
+.modal .conflict .c-row:first-of-type{border-top:0}
+.modal .conflict .c-row label{flex:1;display:flex;gap:8px;align-items:center;cursor:pointer}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.range-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.range-row input[type=date]{flex:1;min-width:130px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl th{background:var(--surface-2);font-weight:600;color:var(--text-2)}
+.tbl tr:hover td{background:var(--surface-2)}
+.tbl .num{font-variant-numeric:tabular-nums;text-align:right}
+.special-list{margin-top:8px}
+.special-item{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--border);font-size:13px}
+.special-item:first-child{border-top:0}
+.special-item .sp-date{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+.special-item .sp-dorms{color:var(--text-2);flex:1}
+.special-item .sp-reason{color:var(--text-2)}
+@media(max-width:650px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .person .p-name{min-width:56px}
+  .person .p-note{flex-basis:100%;order:5}
+  .person .p-export{order:4}
+  .theme-toggle{top:14px;right:12px;padding:5px 9px;font-size:11px}
+  header h1{font-size:18px;padding-right:90px}
+}
+@media print{header,.tabs,.no-print,.dock,.theme-toggle{display:none!important}body{background:#fff}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="dot"></span>宿舍考勤统计 <span class="ver">V20260928_1</span></h1>
+  <div class="sub">按宿舍录入 · 自动汇总 · 备注 · PNG / Excel 导出</div>
+  <button id="themeToggle" class="theme-toggle" onclick="cycleTheme()" title="切换主题">
+    <span id="themeIcon">🌗</span><span id="themeLabel">跟随系统</span>
+  </button>
+</header>
+<main>
+  <div class="card">
+    <div class="row">
+      <label>班级 <input id="className" placeholder="例如：计算机科学与技术261班"></label>
+      <label>日期 <input id="date" type="date"></label>
+      <button class="secondary no-print" onclick="save()">保存当天数据</button>
+      <button class="no-print" onclick="exportAll()">导出全班 PNG</button>
+    </div>
+  </div>
+
+  <section id="manage">
+    <div class="card">
+      <h2>新增宿舍</h2>
+      <div class="row"><input id="dormName" class="grow" placeholder="例如：1栋101 / 101"><button onclick="addDorm()">添加宿舍</button></div>
+      <p class="muted">先把班级宿舍录入。之后每天只需要登记考勤。</p>
+    </div>
+    <div class="card">
+      <h2>Excel 导入名单</h2>
+      <p class="muted">表头固定为「姓名 / 宿舍号 / 学号」，学号可选。有冲突会弹窗让你逐条确认。</p>
+      <div class="row">
+        <input type="file" id="excelFile" accept=".xlsx,.xls" style="flex:1">
+        <button onclick="importExcel()">导入</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>人员名单</h2>
+      <div id="manageList"></div>
+    </div>
+  </section>
+
+  <section id="today" style="display:none">
+    <div class="card">
+      <h2>今日总览</h2>
+      <div id="todayStats"></div>
+    </div>
+    <div id="todayList"></div>
+  </section>
+
+  <section id="history" style="display:none">
+    <div class="card">
+      <h2>历史记录</h2>
+      <p class="muted">点击某一天可查看当天详细名单，也可直接导出当天 PNG。</p>
+      <div id="historyList"></div>
+    </div>
+    <div id="historyDetail"></div>
+  </section>
+
+  <section id="stats" style="display:none">
+    <div class="card">
+      <h2>学期起点</h2>
+      <div class="range-row">
+        <input type="date" id="termStart" onchange="saveTermStart()">
+        <span class="muted">到今天的应到寝天数会自动计算</span>
+      </div>
+      <p class="muted">设置一次即可。每天打开统计页会自动更新。</p>
+    </div>
+    <div class="card">
+      <h2>自定义范围（可选）</h2>
+      <div class="range-row">
+        <input type="date" id="statStart">
+        <span class="muted">至</span>
+        <input type="date" id="statEnd">
+        <button class="secondary small" onclick="setRangeTerm()">整学期</button>
+        <button class="secondary small" onclick="setRangeThisMonth()">本月</button>
+        <button class="secondary small" onclick="setRangeAll()">全部记录</button>
+      </div>
+      <div class="row">
+        <label>搜索 <input id="statSearch" class="grow" placeholder="姓名或学号" oninput="renderStats()"></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>个人考勤</h2>
+      <div id="statsPerson"></div>
+    </div>
+    <div class="card">
+      <h2>宿舍全勤</h2>
+      <p class="muted">全勤 = 当天应到人数（全部 − 病假 − 事假）全部在寝。未登记的天默认全员在寝。</p>
+      <div id="statsDorm"></div>
+    </div>
+    <div class="card">
+      <h2>特殊情况（不统计日）</h2>
+      <p class="muted">标记某天某宿舍不参与统计（如放假、校运会）。需要填写原因。</p>
+      <div class="row">
+        <input type="date" id="spDate" style="flex:1">
+        <input id="spDorms" class="grow" placeholder="宿舍号，多个用、或,分隔；填「全部」表示所有宿舍">
+        <input id="spReason" class="grow" placeholder="原因，例如：国庆假期">
+        <button onclick="addSpecial()">添加</button>
+      </div>
+      <div class="special-list" id="specialList"></div>
+    </div>
+  </section>
+
+  <section id="summary" style="display:none">
+    <div class="card">
+      <h2>导出</h2>
+      <div class="row">
+        <button onclick="exportAll()">全班总结 PNG</button>
+        <button class="secondary" onclick="exportExcel()">导出 Excel（汇总+明细）</button>
+        <button class="secondary" onclick="window.print()">打印/保存 PDF</button>
+        <button class="secondary" onclick="copyTextReport()">复制文字汇报</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label><input type="checkbox" id="optShowSidImg"> 图片显示学号</label>
+        <label><input type="checkbox" id="optShowSidXls"> Excel 显示学号</label>
+      </div>
+      <p class="muted">下面可以分别导出每个宿舍的考勤图片。</p>
+    </div>
+    <div id="summaryList"></div>
+  </section>
+</main>
+
+<nav class="dock no-print" id="dock">
+  <button id="dock-manage" onclick="showTab('manage')"><span class="ico">🏠</span>宿舍</button>
+  <button id="dock-today" onclick="showTab('today')"><span class="ico">📝</span>登记</button>
+  <button id="dock-history" onclick="showTab('history')"><span class="ico">📅</span>历史</button>
+  <button id="dock-stats" onclick="showTab('stats')"><span class="ico">📊</span>统计</button>
+  <button id="dock-summary" onclick="showTab('summary')"><span class="ico">📤</span>导出</button>
+</nav>
+
+<div id="toast"></div>
+
+<div class="modal-mask" id="conflictModal">
+  <div class="modal">
+    <h3>导入冲突确认</h3>
+    <p class="muted">以下项目存在冲突，请逐条选择保留哪一项。选完点击「确认导入」。</p>
+    <div id="conflictBody"></div>
+    <div class="actions">
+      <button class="secondary" onclick="cancelImport()">取消导入</button>
+      <button onclick="confirmImport()">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const THEME_KEY='dormTheme';
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme',theme);
+  const icon=document.getElementById('themeIcon'),label=document.getElementById('themeLabel');
+  if(icon&&label){
+    if(theme==='light'){icon.textContent='☀️';label.textContent='浅色';}
+    else if(theme==='dark'){icon.textContent='🌙';label.textContent='深色';}
+    else{icon.textContent='🌗';label.textContent='跟随系统';}
+  }
+  if(typeof render==='function')setTimeout(render,0);
+}
+function cycleTheme(){
+  const cur=localStorage.getItem(THEME_KEY)||'auto';
+  const next= cur==='auto'?'light' : cur==='light'?'dark' : 'auto';
+  localStorage.setItem(THEME_KEY,next);
+  applyTheme(next);
+  toast('主题：'+({auto:'跟随系统',light:'浅色',dark:'深色'}[next]));
+}
+applyTheme(localStorage.getItem(THEME_KEY)||'auto');
+
+const KEY='dormAttendanceV2';
+let db=JSON.parse(localStorage.getItem(KEY)||'{"dorms":{},"records":{},"specials":[]}');
+
+(function migrate(){
+  let changed=false;
+  if(!db.specials){db.specials=[];changed=true;}
+  if(db.termStart===undefined){db.termStart='';changed=true;}
+  Object.values(db.dorms).forEach(ps=>{
+    ps.forEach(p=>{
+      if(p.sid===undefined){p.sid='';changed=true;}
+    });
+  });
+  if(changed)localStorage.setItem(KEY,JSON.stringify(db));
+})();
+
+let currentTab='today';
+const statuses=['在寝','病假','事假','其他'];
+
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function getPalette(){
+  return {
+    zaoqin:cssVar('--c-zaoqin'),bingjia:cssVar('--c-bingjia'),shijia:cssVar('--c-shijia'),qita:cssVar('--c-qita'),
+    reportBg:cssVar('--report-bg'),reportPaper:cssVar('--report-paper'),reportHead:cssVar('--report-head'),
+    reportRow:cssVar('--report-row'),reportNoteBg:cssVar('--report-note-bg'),reportNoteText:cssVar('--report-note-text'),
+    reportText:cssVar('--report-text'),reportText2:cssVar('--report-text-2'),reportText3:cssVar('--report-text-3'),
+    text:cssVar('--text'),text2:cssVar('--text-2')
+  };
+}
+function statusColorOf(s){const p=getPalette();return {在寝:p.zaoqin,病假:p.bingjia,事假:p.shijia,其他:p.qita}[s]||p.text}
+
+function todayStr(){return new Date().toISOString().slice(0,10)}
+document.getElementById('date').value=todayStr();
+document.getElementById('className').value=db.className||'';
+document.getElementById('date').onchange=render;
+document.getElementById('className').onchange=()=>{db.className=document.getElementById('className').value.trim();save()};
+
+if(window.matchMedia){
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{
+    if((localStorage.getItem(THEME_KEY)||'auto')==='auto')render();
+  });
+}
+
+function save(){localStorage.setItem(KEY,JSON.stringify(db));toast('已保存到本设备')}
+function toast(s){const e=document.getElementById('toast');e.textContent=s;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',1600)}
+function showTab(t){
+  currentTab=t;
+  ['manage','today','history','stats','summary'].forEach(x=>document.getElementById(x).style.display=x===t?'block':'none');
+  ['manage','today','history','stats','summary'].forEach(x=>{
+    const el=document.getElementById('dock-'+x);if(el)el.classList.toggle('active',x===t);
+  });
+  if(t==='stats'){
+    document.getElementById('termStart').value=db.termStart||'';
+    if(!document.getElementById('statStart').value)setRangeTerm();
+  }
+  render();
+}
+function addDorm(){
+  const n=document.getElementById('dormName').value.trim();if(!n)return;
+  if(db.dorms[n])return toast('这个宿舍已经存在');
+  db.dorms[n]=[];document.getElementById('dormName').value='';save();render();
+}
+function addPerson(d){
+  const name=prompt('请输入姓名');if(!name)return;
+  const sid=prompt('请输入学号（可留空）')||'';
+  db.dorms[d].push({id:crypto.randomUUID(),name:name.trim(),sid:sid.trim()});save();render();
+}
+function delDorm(d){if(confirm('确定删除宿舍 '+d+' 及其中人员吗？')){delete db.dorms[d];save();render()}}
+function delPerson(d,id){db.dorms[d]=db.dorms[d].filter(p=>p.id!==id);save();render()}
+function getRec(date,id){return (db.records[date]||{})[id]||{status:'在寝',note:''}}
+function setRec(date,id,field,val){
+  if(!db.records[date])db.records[date]={};if(!db.records[date][id])db.records[date][id]={status:'在寝',note:''};
+  db.records[date][id][field]=val;save();render();
+}
+function setStatus(date,id,val){const cur=getRec(date,id).status;setRec(date,id,'status',cur===val?'在寝':val)}
+function allPeople(){return Object.entries(db.dorms).flatMap(([d,ps])=>ps.map(p=>({...p,dorm:d})))}
+function counts(date,people=allPeople()){
+  const c={在寝:0,病假:0,事假:0,其他:0};people.forEach(p=>c[getRec(date,p.id).status]++);return c;
+}
+function sortedDorms(){
+  return Object.entries(db.dorms).sort((a,b)=>{
+    const na=parseInt(a[0].replace(/\D/g,''),10)||0,nb=parseInt(b[0].replace(/\D/g,''),10)||0;
+    if(na!==nb)return na-nb;
+    return a[0].localeCompare(b[0],'zh');
+  });
+}
+function render(){
+  if(currentTab==='manage')renderManage();
+  if(currentTab==='today')renderToday();
+  if(currentTab==='history')renderHistory();
+  if(currentTab==='stats')renderStats();
+  if(currentTab==='summary')renderSummary();
+}
+function renderManage(){
+  const e=document.getElementById('manageList');
+  if(!Object.keys(db.dorms).length){e.innerHTML='<p class="muted">还没有宿舍，请先添加。</p>';return}
+  e.innerHTML=sortedDorms().map(([d,ps])=>`
+  <div class="dorm"><div class="dorm-title"><span>${esc(d)} <span class="pill">${ps.length}人</span></span>
+  <div><button class="small secondary" onclick="addPerson('${js(d)}')">+ 添加人员</button> <button class="small danger" onclick="delDorm('${js(d)}')">删除宿舍</button></div></div>
+  ${ps.map(p=>`<div class="person"><span class="p-name">${esc(p.name)}</span>${p.sid?`<span class="p-sid">${esc(p.sid)}</span>`:''}<span style="flex:1"></span><button class="small danger" onclick="delPerson('${js(d)}','${p.id}')">删除</button></div>`).join('')}</div>`).join('');
+}
+function renderToday(){
+  const date=document.getElementById('date').value,people=allPeople(),c=counts(date);
+  document.getElementById('todayStats').innerHTML=`<div class="stats">
+  <div class="stat"><b>${people.length}</b><span>总人数</span></div>
+  <div class="stat"><b style="color:var(--c-zaoqin)">${c.在寝}</b><span>在寝</span></div>
+  <div class="stat"><b style="color:var(--c-bingjia)">${c.病假}</b><span>病假</span></div>
+  <div class="stat"><b style="color:var(--c-shijia)">${c.事假}</b><span>事假</span></div>
+  <div class="stat"><b style="color:var(--c-qita)">${c.其他}</b><span>其他</span></div></div>`;
+  document.getElementById('todayList').innerHTML=sortedDorms().map(([d,ps])=>{
+    const cc=counts(date,ps);
+    const abnormal=cc.病假+cc.事假+cc.其他;
+    const pillText=abnormal>0
+      ? `<span style="color:var(--c-bingjia);font-weight:700;">异常 ${abnormal}</span> · 共 ${ps.length}人`
+      : `全部在寝 · ${ps.length}人`;
+    return `<div class="card"><div class="dorm-title"><span>宿舍 ${esc(d)}</span><span class="pill">${pillText}</span></div>
+    ${ps.length?ps.map(p=>{
+      const r=getRec(date,p.id);
+      const btns=statuses.map(s=>`<button class="status-btn ${s===r.status?'on':''}" data-s="${s}" onclick="setStatus('${date}','${p.id}','${s}')">${s}</button>`).join('');
+      return `<div class="person">
+        <span class="p-name">${esc(p.name)}</span>
+        ${p.sid?`<span class="p-sid">${esc(p.sid)}</span>`:''}
+        <div class="p-status">${btns}</div>
+        <input class="p-note" value="${escAttr(r.note)}" placeholder="备注（可选）" onchange="setRec('${date}','${p.id}','note',this.value)">
+        <button class="small secondary p-export" onclick="exportDorm('${js(d)}')">导出</button>
+      </div>`;
+    }).join(''):'<p class="muted">暂无人员</p>'}
+    <div class="dorm-actions"><button class="small secondary" onclick="setDormAll('${js(d)}','在寝')">本舍全部在寝</button><button class="small secondary" onclick="clearDorm('${js(d)}')">清空本舍状态/备注</button></div>
+    </div>`;
+  }).join('');
+}
+function setDormAll(d,status){
+  const date=document.getElementById('date').value;
+  if(!db.records[date])db.records[date]={};
+  db.dorms[d].forEach(p=>{
+    if(!db.records[date][p.id])db.records[date][p.id]={status:'在寝',note:''};
+    db.records[date][p.id].status=status;
+  });
+  save();render();
+}
+function clearDorm(d){
+  const date=document.getElementById('date').value;
+  if(!db.records[date])return;
+  db.dorms[d].forEach(p=>{delete db.records[date][p.id]});
+  save();render();
+}
+function renderHistory(){
+  const dates=Object.keys(db.records).sort().reverse();
+  const box=document.getElementById('historyList');
+  document.getElementById('historyDetail').innerHTML='';
+  if(!dates.length){box.innerHTML='<p class="muted">暂无历史记录。</p>';return}
+  box.innerHTML=dates.map(d=>{
+    const rec=db.records[d]||{};
+    const c={在寝:0,病假:0,事假:0,其他:0};
+    allPeople().forEach(p=>{const s=(rec[p.id]||{}).status||'在寝';c[s]++});
+    const abnormal=c.病假+c.事假+c.其他;
+    return `<div class="history-item" onclick="showHistoryDetail('${d}')">
+      <div><div class="date">${d}${d===todayStr()?' （今日）':''}</div>
+      <div class="stats-line">在寝 ${c.在寝}｜病假 ${c.病假}｜事假 ${c.事假}｜其他 ${c.其他}${abnormal>0?`　<span style="color:var(--c-bingjia);">异常 ${abnormal}</span>`:''}</div></div>
+      <span class="arrow">›</span></div>`;
+  }).join('');
+}
+function showHistoryDetail(date){
+  const rec=db.records[date]||{};
+  let html=`<div class="card"><div class="dorm-title"><span>${date} 详细记录</span><button class="small secondary" onclick="exportDate('${date}')">导出当天 PNG</button></div>`;
+  sortedDorms().forEach(([d,ps])=>{
+    html+=`<div class="dorm"><div class="dorm-title"><span>${esc(d)}</span><span class="pill">${ps.length}人</span></div>`;
+    ps.forEach(p=>{
+      const r=rec[p.id]||{status:'在寝',note:''};
+      const color=statusColorOf(r.status);
+      html+=`<div class="person"><span class="p-name">${esc(p.name)}</span>${p.sid?`<span class="p-sid">${esc(p.sid)}</span>`:''}<span style="color:${color};font-weight:700;">${r.status}</span><span class="muted" style="flex:1">${esc(r.note||'')}</span></div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  document.getElementById('historyDetail').innerHTML=html;
+}
+function renderSummary(){
+  const date=document.getElementById('date').value;
+  document.getElementById('summaryList').innerHTML=sortedDorms().map(([d,ps])=>{
+    const c=counts(date,ps);
+    return `<div class="card"><div class="dorm-title"><span>宿舍 ${esc(d)}</span><span class="pill">${ps.length}人</span></div>
+    <p>在寝 ${c.在寝}　病假 ${c.病假}　事假 ${c.事假}　其他 ${c.其他}</p>
+    <button onclick="exportDorm('${js(d)}')">导出 ${esc(d)} PNG</button></div>`;
+  }).join('');
+}
+
+/* ========== 统计 ========== */
+function saveTermStart(){
+  db.termStart=document.getElementById('termStart').value;
+  save();
+  setRangeTerm();
+}
+function setRangeTerm(){
+  const start=db.termStart||todayStr();
+  document.getElementById('statStart').value=start;
+  document.getElementById('statEnd').value=todayStr();
+  renderStats();
+}
+function setRangeThisMonth(){
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth();
+  const p=n=>String(n).padStart(2,'0');
+  document.getElementById('statStart').value=`${y}-${p(m+1)}-01`;
+  document.getElementById('statEnd').value=`${y}-${p(m+1)}-${p(new Date(y,m+1,0).getDate())}`;
+  renderStats();
+}
+function setRangeAll(){
+  const dates=Object.keys(db.records).sort();
+  if(!dates.length){document.getElementById('statStart').value='';document.getElementById('statEnd').value='';renderStats();return}
+  document.getElementById('statStart').value=dates[0];
+  document.getElementById('statEnd').value=dates[dates.length-1];
+  renderStats();
+}
+function dateRange(start,end){
+  const arr=[];const s=new Date(start),e=new Date(end);
+  while(s<=e){arr.push(s.toISOString().slice(0,10));s.setDate(s.getDate()+1)}
+  return arr;
+}
+function specialFor(date,dorm){
+  return db.specials.find(x=>x.date===date&&(x.dorms.includes('全部')||x.dorms.includes(dorm)));
+}
+function dormFullOn(dorm,date){
+  const ps=db.dorms[dorm]||[];
+  if(!ps.length)return false;
+  const rec=db.records[date]||{};
+  let should=0,zaoqin=0;
+  ps.forEach(p=>{
+    const st=(rec[p.id]||{}).status||'在寝';
+    if(st==='病假'||st==='事假')return;
+    should++;
+    if(st==='在寝')zaoqin++;
+  });
+  return should>0&&zaoqin===should;
+}
+function renderStats(){
+  const start=document.getElementById('statStart').value;
+  const end=document.getElementById('statEnd').value;
+  if(!start||!end){
+    document.getElementById('statsPerson').innerHTML='<p class="muted">请选择日期范围，或先设置学期起点。</p>';
+    document.getElementById('statsDorm').innerHTML='';
+    renderSpecials();return;
+  }
+  const range=dateRange(start,end);
+  const kw=(document.getElementById('statSearch').value||'').trim().toLowerCase();
+
+  // 个人
+  const people=allPeople().filter(p=>{
+    if(!kw)return true;
+    return p.name.toLowerCase().includes(kw)||(p.sid||'').toLowerCase().includes(kw);
+  });
+  let html=`<table class="tbl"><thead><tr><th>姓名</th><th>宿舍</th><th class="num">在寝</th><th class="num">病假</th><th class="num">事假</th><th class="num">其他</th><th class="num">应在寝</th><th class="num">全勤率</th></tr></thead><tbody>`;
+  people.forEach(p=>{
+    const c={在寝:0,病假:0,事假:0,其他:0};
+    let should=0;
+    range.forEach(d=>{
+      if(specialFor(d,p.dorm))return;
+      should++;
+      const st=(db.records[d]&&db.records[d][p.id]?db.records[d][p.id].status:'在寝');
+      c[st]++;
+    });
+    const rate=should>0?Math.round(c.在寝/should*100):0;
+    html+=`<tr><td>${esc(p.name)}</td><td>${esc(p.dorm)}</td>
+      <td class="num" style="color:var(--c-zaoqin)">${c.在寝}</td>
+      <td class="num" style="color:var(--c-bingjia)">${c.病假}</td>
+      <td class="num" style="color:var(--c-shijia)">${c.事假}</td>
+      <td class="num" style="color:var(--c-qita)">${c.其他}</td>
+      <td class="num">${should}</td>
+      <td class="num"><b>${rate}%</b></td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('statsPerson').innerHTML=people.length?html:'<p class="muted">没有匹配的人员。</p>';
+
+  // 宿舍
+  let dh=`<table class="tbl"><thead><tr><th>宿舍</th><th class="num">人数</th><th class="num">全勤次数</th><th class="num">应在寝天数</th><th class="num">全勤率</th></tr></thead><tbody>`;
+  sortedDorms().forEach(([d,ps])=>{
+    const should=range.filter(dt=>!specialFor(dt,d)).length;
+    let full=0;
+    range.forEach(dt=>{
+      if(specialFor(dt,d))return;
+      if(dormFullOn(d,dt))full++;
+    });
+    const rate=should>0?Math.round(full/should*100):0;
+    dh+=`<tr><td>${esc(d)}</td><td class="num">${ps.length}</td>
+      <td class="num" style="color:var(--c-zaoqin)"><b>${full}</b></td>
+      <td class="num">${should}</td>
+      <td class="num"><b>${rate}%</b></td></tr>`;
+  });
+  dh+=`</tbody></table>`;
+  document.getElementById('statsDorm').innerHTML=dh;
+
+  renderSpecials();
+}
+function renderSpecials(){
+  const box=document.getElementById('specialList');
+  if(!db.specials.length){box.innerHTML='<p class="muted">暂无特殊情况。</p>';return}
+  const sorted=[...db.specials].sort((a,b)=>b.date.localeCompare(a.date));
+  box.innerHTML=sorted.map(s=>`<div class="special-item">
+    <span class="sp-date">${s.date}</span>
+    <span class="sp-dorms">${s.dorms.join('、')}</span>
+    <span class="sp-reason">${esc(s.reason||'')}</span>
+    <button class="small danger" onclick="delSpecial('${s.id}')">删除</button>
+  </div>`).join('');
+}
+function addSpecial(){
+  const date=document.getElementById('spDate').value;
+  const dormsRaw=document.getElementById('spDorms').value.trim();
+  const reason=document.getElementById('spReason').value.trim();
+  if(!date)return toast('请选择日期');
+  if(!dormsRaw)return toast('请填写宿舍号，或填「全部」');
+  if(!reason)return toast('请填写原因');
+  const dorms=dormsRaw.split(/[、,，\s]+/).map(s=>s.trim()).filter(Boolean);
+  db.specials.push({id:crypto.randomUUID(),date,dorms,reason});
+  document.getElementById('spDate').value='';
+  document.getElementById('spDorms').value='';
+  document.getElementById('spReason').value='';
+  save();renderStats();toast('已添加特殊情况');
+}
+function delSpecial(id){
+  db.specials=db.specials.filter(s=>s.id!==id);
+  save();renderStats();
+}
+
+/* ========== Excel 导入 ========== */
+let pendingImport=null;
+function importExcel(){
+  const f=document.getElementById('excelFile').files[0];
+  if(!f)return toast('请先选择 Excel 文件');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      if(!rows.length)return toast('表格为空');
+      const norm=rows.map(r=>{
+        const o={};
+        Object.keys(r).forEach(k=>{
+          const kk=String(k).trim();
+          if(kk==='姓名'||kk==='名字')o.name=String(r[k]).trim();
+          else if(kk==='宿舍号'||kk==='宿舍')o.dorm=String(r[k]).trim();
+          else if(kk==='学号')o.sid=String(r[k]).trim();
+        });
+        return o;
+      }).filter(x=>x.name);
+      if(!norm.length)return toast('未识别到有效数据（需有「姓名」列）');
+      const target={};
+      norm.forEach(x=>{
+        const dorm=x.dorm||'未分配';
+        if(!target[dorm])target[dorm]=[];
+        target[dorm].push({name:x.name,sid:x.sid||''});
+      });
+      const conflicts=detectConflicts(target);
+      if(conflicts.length){
+        pendingImport={target,conflicts,resolutions:{}};
+        renderConflictModal();
+        document.getElementById('conflictModal').classList.add('show');
+      }else{
+        applyImport(target);
+      }
+    }catch(err){
+      console.error(err);toast('解析失败：'+err.message);
+    }
+  };
+  reader.readAsArrayBuffer(f);
+}
+function detectConflicts(target){
+  const list=[];
+  const nameMap={};
+  Object.entries(target).forEach(([d,ps])=>ps.forEach(p=>{
+    if(!nameMap[p.name])nameMap[p.name]=[];
+    nameMap[p.name].push({dorm:d,sid:p.sid});
+  }));
+  Object.entries(nameMap).forEach(([name,arr])=>{
+    const dorms=[...new Set(arr.map(x=>x.dorm))];
+    if(dorms.length>1)list.push({type:'同名多宿舍',name,items:arr});
+  });
+  const sidMap={};
+  Object.entries(target).forEach(([d,ps])=>ps.forEach(p=>{
+    if(!p.sid)return;
+    if(!sidMap[p.sid])sidMap[p.sid]=[];
+    sidMap[p.sid].push({dorm:d,name:p.name});
+  }));
+  Object.entries(sidMap).forEach(([sid,arr])=>{
+    const names=[...new Set(arr.map(x=>x.name))];
+    if(names.length>1)list.push({type:'同学号多姓名',sid,items:arr});
+  });
+  Object.entries(nameMap).forEach(([name,arr])=>{
+    const sids=[...new Set(arr.map(x=>x.sid).filter(Boolean))];
+    if(sids.length>1)list.push({type:'同姓名多学号',name,items:arr});
+  });
+  const dormNums={};
+  Object.keys(target).forEach(d=>{
+    const m=d.match(/\d+/);
+    if(m){
+      const n=m[0];
+      if(!dormNums[n])dormNums[n]=[];
+      dormNums[n].push(d);
+    }
+  });
+  Object.entries(dormNums).forEach(([n,ds])=>{
+    if(ds.length>1)list.push({type:'宿舍号写法不一致',number:n,items:ds.map(d=>({dorm:d}))});
+  });
+  const existNames={};
+  Object.values(db.dorms).forEach(ps=>ps.forEach(p=>{existNames[p.name]=p}));
+  Object.entries(nameMap).forEach(([name,arr])=>{
+    if(existNames[name])list.push({type:'与现有名单重复',name,items:[...arr,{dorm:'现有',sid:existNames[name].sid||''}]});
+  });
+  return list;
+}
+function renderConflictModal(){
+  const body=document.getElementById('conflictBody');
+  body.innerHTML=pendingImport.conflicts.map((c,i)=>{
+    let title='';
+    if(c.type==='同名多宿舍')title=`「${esc(c.name)}」出现在多个宿舍`;
+    else if(c.type==='同学号多姓名')title=`学号 ${esc(c.sid)} 对应多个姓名`;
+    else if(c.type==='同姓名多学号')title=`「${esc(c.name)}」对应多个学号`;
+    else if(c.type==='宿舍号写法不一致')title=`宿舍号 ${esc(c.number)} 有多种写法`;
+    else if(c.type==='与现有名单重复')title=`「${esc(c.name)}」已存在于现有名单`;
+    const opts=c.items.map((it,j)=>{
+      let label='';
+      if(c.type==='同名多宿舍')label=`宿舍 ${esc(it.dorm)}（学号 ${esc(it.sid||'无')}）`;
+      else if(c.type==='同学号多姓名')label=`${esc(it.name)}（宿舍 ${esc(it.dorm)}）`;
+      else if(c.type==='同姓名多学号')label=`学号 ${esc(it.sid||'无')}（宿舍 ${esc(it.dorm)}）`;
+      else if(c.type==='宿舍号写法不一致')label=`${esc(it.dorm)}`;
+      else if(c.type==='与现有名单重复')label=it.dorm==='现有'?`现有记录（学号 ${esc(it.sid||'无')}）`:`新导入：宿舍 ${esc(it.dorm)}（学号 ${esc(it.sid||'无')}）`;
+      return `<div class="c-row"><label><input type="radio" name="cf-${i}" value="${j}" ${j===0?'checked':''} onchange="pendingImport.resolutions[${i}]=${j}"> ${label}</label></div>`;
+    }).join('');
+    return `<div class="conflict"><div class="c-title">${title}</div>${opts}</div>`;
+  }).join('');
+  pendingImport.conflicts.forEach((c,i)=>{if(pendingImport.resolutions[i]===undefined)pendingImport.resolutions[i]=0});
+}
+function cancelImport(){
+  pendingImport=null;
+  document.getElementById('conflictModal').classList.remove('show');
+  document.getElementById('excelFile').value='';
+}
+function confirmImport(){
+  if(!pendingImport)return;
+  const {target,conflicts,resolutions}=pendingImport;
+  conflicts.forEach((c,i)=>{
+    const keep=resolutions[i];
+    if(c.type==='同名多宿舍'){
+      const kept=c.items[keep];
+      Object.keys(target).forEach(d=>{
+        target[d]=target[d].filter(p=>!(p.name===c.name&&d!==kept.dorm));
+      });
+    }else if(c.type==='同姓名多学号'){
+      const kept=c.items[keep];
+      Object.keys(target).forEach(d=>{
+        target[d]=target[d].map(p=>p.name===c.name?{...p,sid:kept.sid}:p);
+      });
+    }else if(c.type==='同学号多姓名'){
+      const kept=c.items[keep];
+      Object.keys(target).forEach(d=>{
+        target[d]=target[d].map(p=>p.sid===c.sid&&p.name!==kept.name?{...p,sid:''}:p);
+      });
+    }else if(c.type==='宿舍号写法不一致'){
+      const kept=c.items[keep].dorm;
+      const others=c.items.filter((_,j)=>j!==keep).map(x=>x.dorm);
+      others.forEach(o=>{
+        if(target[o]){
+          target[kept]=(target[kept]||[]).concat(target[o]);
+          delete target[o];
+        }
+      });
+    }else if(c.type==='与现有名单重复'){
+      if(keep===c.items.length-1){
+        Object.keys(target).forEach(d=>{target[d]=target[d].filter(p=>p.name!==c.name)});
+      }
+    }
+  });
+  applyImport(target);
+}
+function applyImport(target){
+  const oldIds={};
+  Object.values(db.dorms).forEach(ps=>ps.forEach(p=>{oldIds[p.name]=p.id}));
+  const newDorms={};
+  Object.entries(target).forEach(([d,ps])=>{
+    newDorms[d]=ps.map(p=>({id:oldIds[p.name]||crypto.randomUUID(),name:p.name,sid:p.sid||''}));
+  });
+  db.dorms=newDorms;
+  save();render();
+  cancelImport();
+  toast('导入完成，共 '+Object.keys(newDorms).length+' 个宿舍');
+}
+
+/* ========== 导出图片 ========== */
+function wrapText(ctx,text,maxWidth,font){
+  ctx.font=font;const chars=[...String(text||'')];let lines=[],line='';
+  chars.forEach(ch=>{const t=line+ch;if(ctx.measureText(t).width>maxWidth&&line){lines.push(line);line=ch}else line=t});
+  if(line)lines.push(line);return lines;
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
+function makeReportCanvas(mode,date,dorms){
+  const P=getPalette();
+  const showSid=document.getElementById('optShowSidImg').checked;
+  const className=db.className||'班级考勤日报';
+  const scale=2,w=1200,pad=70;
+  let totalPeople=0,allC={在寝:0,病假:0,事假:0,其他:0};
+  dorms.forEach(d=>{totalPeople+=d.people.length;allC.在寝+=d.c.在寝;allC.病假+=d.c.病假;allC.事假+=d.c.事假;allC.其他+=d.c.其他});
+  let h=390;
+  dorms.forEach(d=>{h+=115+d.people.length*48+(d.notes.length?70:0)});
+  h+=70;
+  const c=document.createElement('canvas');c.width=w*scale;c.height=h*scale;
+  const ctx=c.getContext('2d');ctx.scale(scale,scale);
+
+  ctx.fillStyle=P.reportBg;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle=P.reportPaper;ctx.fillRect(30,30,w-60,h-60);
+
+  ctx.fillStyle=P.reportText;ctx.font='bold 36px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';
+  ctx.fillText(className,pad,95);
+  ctx.fillStyle=P.reportText2;ctx.font='18px sans-serif';
+  ctx.fillText('宿舍考勤日报 V20260928_1',pad,130);
+  ctx.fillText(date,pad,160);
+
+  const cards=[['应到',totalPeople,P.reportText],['在寝',allC.在寝,P.zaoqin],['病假',allC.病假,P.bingjia],['事假',allC.事假,P.shijia],['其他',allC.其他,P.qita]];
+  const cw=(w-2*pad-60)/5;
+  cards.forEach((a,i)=>{
+    const x=pad+i*(cw+15),y=195;
+    ctx.fillStyle=P.reportHead;ctx.fillRect(x,y,cw,115);
+    ctx.fillStyle=P.reportText2;ctx.font='16px sans-serif';ctx.fillText(a[0],x+20,y+30);
+    ctx.fillStyle=a[2];ctx.font='bold 32px sans-serif';ctx.fillText(String(a[1]),x+20,y+76);
+  });
+
+  let y=355;
+  const colName=pad+18;
+  const colSid=pad+Math.round((w-2*pad)*0.28);
+  const colStatus=pad+Math.round((w-2*pad)*0.55);
+  const colNote=pad+Math.round((w-2*pad)*0.72);
+  const rowH=46;
+
+  dorms.forEach(d=>{
+    ctx.fillStyle=P.reportText;ctx.font='bold 23px sans-serif';ctx.fillText('宿舍 '+d.name,pad,y);
+    const abn=d.c.病假+d.c.事假+d.c.其他;
+    const statText=abn>0
+      ? `共 ${d.people.length} 人 · 在寝 ${d.c.在寝} · 病假 ${d.c.病假} · 事假 ${d.c.事假} · 其他 ${d.c.其他}`
+      : `共 ${d.people.length} 人 · 全部在寝`;
+    ctx.fillStyle=abn>0?P.bingjia:P.zaoqin;ctx.font='15px sans-serif';
+    const statW=ctx.measureText(statText).width;
+    ctx.fillText(statText,w-pad-statW,y);
+    y+=22;
+    ctx.strokeStyle=P.reportRow;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
+    y+=14;
+    ctx.fillStyle=P.reportHead;ctx.fillRect(pad,y,w-2*pad,38);
+    ctx.fillStyle=P.reportText2;ctx.font='bold 14px sans-serif';
+    ctx.fillText('姓名',colName,y+25);
+    if(showSid)ctx.fillText('学号',colSid,y+25);
+    ctx.fillText('状态',colStatus,y+25);
+    ctx.fillText('备注',colNote,y+25);
+    y+=38;
+    d.people.forEach(p=>{
+      ctx.strokeStyle=P.reportRow;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
+      ctx.fillStyle=P.reportText;ctx.font='16px sans-serif';ctx.fillText(p.name,colName,y+30);
+      if(showSid){ctx.fillStyle=P.reportText2;ctx.font='14px sans-serif';ctx.fillText(p.sid||'—',colSid,y+30)}
+      const color=statusColorOf(p.status)||P.reportText;
+      ctx.font='bold 14px sans-serif';
+      const stW=ctx.measureText(p.status).width+22;
+      ctx.fillStyle=color;roundRect(ctx,colStatus,y+9,stW,26,13);ctx.fill();
+      ctx.fillStyle='#fff';ctx.fillText(p.status,colStatus+11,y+27);
+      ctx.fillStyle=P.reportText2;ctx.font='15px sans-serif';
+      const noteMax=w-pad-colNote-10;
+      const lines=wrapText(ctx,p.note||'—',noteMax,'15px sans-serif');
+      ctx.fillText(lines[0],colNote,y+30);
+      y+=rowH;
+    });
+    if(d.notes.length){
+      ctx.fillStyle=P.reportNoteBg;ctx.fillRect(pad,y,w-2*pad,48);
+      ctx.fillStyle=P.reportNoteText;ctx.font='bold 14px sans-serif';ctx.fillText('备注',pad+18,y+28);
+      ctx.font='14px sans-serif';
+      const lines=wrapText(ctx,d.notes.join('；'),w-2*pad-110,'14px sans-serif');
+      ctx.fillText(lines[0]||'',pad+80,y+28);y+=60;
+    }else y+=20;
+  });
+  ctx.fillStyle=P.reportText3;ctx.font='12px sans-serif';ctx.fillText('宿舍考勤统计 · V20260928_1 · 由本地工具生成',pad,h-48);
+  return c;
+}
+function buildDormData(date){
+  return sortedDorms().map(([d,ps])=>{
+    const c=counts(date,ps);
+    const people=ps.map(p=>{const r=getRec(date,p.id);return{name:p.name,sid:p.sid||'',status:r.status,note:r.note||''}});
+    const notes=people.filter(p=>p.note).map(p=>`${p.name}：${p.note}`);
+    return{name:d,people,c,notes};
+  });
+}
+function downloadCanvas(c,name){const a=document.createElement('a');a.download=name;a.href=c.toDataURL('image/png');a.click()}
+function exportDorm(d){
+  const date=document.getElementById('date').value,all=buildDormData(date),one=all.filter(x=>x.name===d);
+  if(!one.length)return;
+  downloadCanvas(makeReportCanvas('dorm',date,one),`宿舍考勤_${d}_${date}.png`);
+}
+function exportDate(date){downloadCanvas(makeReportCanvas('all',date,buildDormData(date)),`全班宿舍考勤日报_${date}.png`)}
+function exportAll(){
+  const date=document.getElementById('date').value;
+  downloadCanvas(makeReportCanvas('all',date,buildDormData(date)),`全班宿舍考勤日报_${date}.png`);
+}
+
+/* ========== 导出 Excel ========== */
+function exportExcel(){
+  const showSid=document.getElementById('optShowSidXls').checked;
+  const summary=[];
+  const allDates=Object.keys(db.records).sort();
+  const people=allPeople();
+  people.forEach(p=>{
+    const c={在寝:0,病假:0,事假:0,其他:0};
+    let should=0;
+    allDates.forEach(d=>{
+      if(specialFor(d,p.dorm))return;
+      should++;
+      const st=(db.records[d]&&db.records[d][p.id]?db.records[d][p.id].status:'在寝');
+      c[st]++;
+    });
+    const row={姓名:p.name,宿舍号:p.dorm};
+    if(showSid)row.学号=p.sid||'';
+    row.在寝=c.在寝;row.病假=c.病假;row.事假=c.事假;row.其他=c.其他;row.应在寝天数=should;
+    row.全勤率=should>0?Math.round(c.在寝/should*100)+'%':'0%';
+    summary.push(row);
+  });
+  const ws1=XLSX.utils.json_to_sheet(summary);
+
+  const detail=[];
+  allDates.forEach(d=>{
+    const rec=db.records[d]||{};
+    people.forEach(p=>{
+      const r=rec[p.id]||{status:'在寝',note:''};
+      const row={日期:d,姓名:p.name,宿舍号:p.dorm};
+      if(showSid)row.学号=p.sid||'';
+      row.状态=r.status;row.备注=r.note||'';
+      detail.push(row);
+    });
+  });
+  const ws2=XLSX.utils.json_to_sheet(detail);
+
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws1,'汇总');
+  XLSX.utils.book_append_sheet(wb,ws2,'明细');
+  XLSX.writeFile(wb,`宿舍考勤_${todayStr()}.xlsx`);
+  toast('Excel 已导出');
+}
+function copyTextReport(){
+  const date=document.getElementById('date').value;
+  const people=allPeople();
+  const c={在寝:0,病假:0,事假:0,其他:0};
+  people.forEach(p=>c[getRec(date,p.id).status]++);
+  let txt=`【宿舍考勤】${date}\n共 ${Object.keys(db.dorms).length} 个宿舍 / ${people.length} 人\n`;
+  txt+=`在寝 ${c.在寝}｜病假 ${c.病假}｜事假 ${c.事假}｜其他 ${c.其他}\n`;
+  const lines=[];
+  sortedDorms().forEach(([d,ps])=>{
+    const abn=[],miss=[];
+    ps.forEach(p=>{
+      const r=db.records[date]&&db.records[date][p.id];
+      if(!r){miss.push(p.name);return}
+      if(r.status!=='在寝')abn.push(`${p.name}(${r.status}${r.note?'：'+r.note:''})`);
+    });
+    if(abn.length||miss.length){
+      let line=`· ${d}：`;const parts=[];
+      if(abn.length)parts.push(abn.join('、'));
+      if(miss.length)parts.push(`未登记：${miss.join('、')}`);
+      line+=parts.join('；');lines.push(line);
+    }
+  });
+  if(lines.length)txt+='\n需关注宿舍：\n'+lines.join('\n')+'\n';
+  else txt+='\n全部宿舍在寝。\n';
+  navigator.clipboard.writeText(txt).then(()=>toast('已复制，可粘贴到微信'),()=>prompt('复制失败，请手动复制：',txt));
+}
+
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escAttr(s){return esc(s)}
+function js(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+showTab('today');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script>
+</body></html>
